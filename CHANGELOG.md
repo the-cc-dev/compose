@@ -1,6 +1,117 @@
 Change log
 ==========
 
+1.23.2 (2018-11-28)
+-------------------
+
+### Bugfixes
+
+- Reverted a 1.23.0 change that appended random strings to container names
+  created by `docker-compose up`, causing addressability issues.
+  Note: Containers created by `docker-compose run` will continue to use
+  randomly generated names to avoid collisions during parallel runs.
+
+- Fixed an issue where some `dockerfile` paths would fail unexpectedly when
+  attempting to build on Windows.
+
+- Fixed a bug where build context URLs would fail to build on Windows.
+
+- Fixed a bug that caused `run` and `exec` commands to fail for some otherwise
+  accepted values of the `--host` parameter.
+
+- Fixed an issue where overrides for the `storage_opt` and `isolation` keys in
+  service definitions weren't properly applied.
+
+- Fixed a bug where some invalid Compose files would raise an uncaught
+  exception during validation.
+
+1.23.1 (2018-11-01)
+-------------------
+
+### Bugfixes
+
+- Fixed a bug where working with containers created with a previous (< 1.23.0)
+  version of Compose would cause unexpected crashes
+
+- Fixed an issue where the behavior of the `--project-directory` flag would
+  vary depending on which subcommand was being used.
+
+1.23.0 (2018-10-30)
+-------------------
+
+### Important note
+
+The default naming scheme for containers created by Compose in this version
+has changed from `<project>_<service>_<index>` to
+`<project>_<service>_<index>_<slug>`, where `<slug>` is a randomly-generated
+hexadecimal string. Please make sure to update scripts relying on the old
+naming scheme accordingly before upgrading.
+
+### Features
+
+- Logs for containers restarting after a crash will now appear in the output
+  of the `up` and `logs` commands.
+
+- Added `--hash` option to the `docker-compose config` command, allowing users
+  to print a hash string for each service's configuration to facilitate rolling
+  updates.
+
+- Added `--parallel` flag to the `docker-compose build` command, allowing
+  Compose to build up to 5 images simultaneously.
+
+- Output for the `pull` command now reports status / progress even when pulling
+  multiple images in parallel.
+
+- For images with multiple names, Compose will now attempt to match the one
+  present in the service configuration in the output of the `images` command.
+
+### Bugfixes
+
+- Parallel `run` commands for the same service will no longer fail due to name
+  collisions.
+
+- Fixed an issue where paths longer than 260 characters on Windows clients would
+  cause `docker-compose build` to fail.
+
+- Fixed a bug where attempting to mount `/var/run/docker.sock` with
+  Docker Desktop for Windows would result in failure.
+
+- The `--project-directory` option is now used by Compose to determine where to
+  look for the `.env` file.
+
+- `docker-compose build` no longer fails when attempting to pull an image with
+  credentials provided by the gcloud credential helper.
+
+- Fixed the `--exit-code-from` option in `docker-compose up` to always report
+  the actual exit code even when the watched container isn't the cause of the
+  exit.
+
+- Fixed an issue that would prevent recreating a service in some cases where
+  a volume would be mapped to the same mountpoint as a volume declared inside
+  the image's Dockerfile.
+
+- Fixed a bug that caused hash configuration with multiple networks to be
+  inconsistent, causing some services to be unnecessarily restarted.
+
+- Fixed a bug that would cause failures with variable substitution for services
+  with a name containing one or more dot characters
+
+- Fixed a pipe handling issue when using the containerized version of Compose.
+
+- Fixed a bug causing `external: false` entries in the Compose file to be
+  printed as `external: true` in the output of `docker-compose config`
+
+- Fixed a bug where issuing a `docker-compose pull` command on services
+  without a defined image key would cause Compose to crash
+
+- Volumes and binds are now mounted in the order they're declared in the
+  service definition
+
+### Miscellaneous
+
+- The `zsh` completion script has been updated with new options, and no
+  longer suggests container names where service names are expected.
+
 1.22.0 (2018-07-17)
 -------------------
 
